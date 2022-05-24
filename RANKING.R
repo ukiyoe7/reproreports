@@ -1,11 +1,23 @@
+
+## RANKING DE CLIENTES
+## 05.2022
+## SANDRO JAKOSKA
+
+
+## LIBRARIES =======================================================================
+
 library(tidyverse)
 library(lubridate)
 library(reshape2)
 library(DBI)
 library(googlesheets4)
+
+## DB CONNECTION ====================================================================
+
 con2 <- dbConnect(odbc::odbc(), "reproreplica")
 
-sales2021 <- get(load("C:\\Users\\Repro\\Documents\\R\\ADM\\REPORT\\BASES\\sales2021.RData"))
+
+## CLIENTS ==========================================================================
 
 clientes <- dbGetQuery(con2,"
 SELECT DISTINCT CLIEN.CLICODIGO,
@@ -32,6 +44,8 @@ INNER JOIN (SELECT DISTINCT SITCLI.CLICODIGO,SITDATA,MAX(SITSEQ)USEQ FROM SITCLI
 GROUP BY 1,2)MSEQ ON A.CLICODIGO=MSEQ.CLICODIGO AND MSEQ.SITDATA=A.ULTIMA AND MSEQ.USEQ=SITCLI.SITSEQ
 WHERE SITCODIGO=4")
 
+
+##  SALES ==========================================================================
 
 sales2022 <- dbGetQuery(con2,"
 WITH CLI AS (SELECT DISTINCT CLIEN.CLICODIGO,CLINOMEFANT
@@ -61,11 +75,12 @@ END LENTES,
     INNER JOIN AUX ON PD.PROCODIGO= AUX.PROCODIGO
      GROUP BY 1,2,3") 
 
-##union of sales
+
 
 sales <- union_all(sales2021,sales2022)
 
-##discounts
+
+##  DISCOUNTS ==========================================================================
 
 desct <- dbGetQuery(con2,"
 SELECT CLICODIGO,
@@ -121,6 +136,8 @@ CODGRUPO,
   dcast(.,CODGRUPO ~ LINHA,mean) %>% replace(is.na(.),0) %>% apply(.,2,function(x) round(x,0)) %>% as.data.frame()
 
 
+##  RANKING CLIENTS ==========================================================================
+
 nsales <- sales %>% group_by(CLICODIGO) %>% 
   summarize(
     LASTMONTHLASTYEAR=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date((Sys.Date()-years(1)) %m-% months(1), 'month') & floor_date(PEDDTBAIXA,"day")<=ceiling_date((Sys.Date()-years(1)) %m-% months(1), 'month') %m-% days(1)],na.rm = TRUE),
@@ -167,8 +184,7 @@ data <- data %>% arrange(desc(.$YTD22)) %>% as.data.frame() %>%
   rename_at(9:11,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(1:3,5,6,9:13,18,28,14:15,27,25,19:24,26,7)]
 
 
-
-##GRUPOS
+##  RANKING GRUPOS ==========================================================================
 
 
 dt <- left_join(anti_join(clientes,inativos,by="CLICODIGO"),sales,by="CLICODIGO") %>% as.data.frame()
@@ -224,7 +240,8 @@ gdata <- gdata %>% arrange(desc(.$YTD22)) %>% as.data.frame() %>%
   rename_at(4:6,~ c(LASTMONTHLASTYEAR3,LASTMONTHTHISYEAR3,CURRENTMONTH3)) %>% 
   .[,c(3,2,1,4:8,14,15,9:10,24,22,16:21,23,13)]
 
-## WRITE ON GOOGLE
+
+##  GOOGLE ==========================================================================
 
 range_write("1GpUPX7RQWL-TDrujKNhDYrKSZ5VzmumZPE8a3TXwaek",
             data=data,sheet = "DADOS",
