@@ -222,11 +222,17 @@ CURRENTMONTH3 <- toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y"))
 
 gdata <- gdata %>% arrange(desc(.$YTD22)) %>% as.data.frame() %>% 
   rename_at(4:6,~ c(LASTMONTHLASTYEAR3,LASTMONTHTHISYEAR3,CURRENTMONTH3)) %>% 
-  .[,c(3,2,1,4:8,14,15,9:10,23,21,16:20,22,13)]
+  .[,c(3,2,1,4:8,14,15,9:10,24,22,16:21,23,13)]
 
-sheet_write(data,ss = "1GpUPX7RQWL-TDrujKNhDYrKSZ5VzmumZPE8a3TXwaek",sheet = "DADOS")
-sheet_write(gdata,ss = "1GpUPX7RQWL-TDrujKNhDYrKSZ5VzmumZPE8a3TXwaek",sheet = "DADOS2") 
+## WRITE ON GOOGLE
 
+range_write("1GpUPX7RQWL-TDrujKNhDYrKSZ5VzmumZPE8a3TXwaek",
+            data=data,sheet = "DADOS",
+            range = "A1",reformat = FALSE)
+
+range_write("1GpUPX7RQWL-TDrujKNhDYrKSZ5VzmumZPE8a3TXwaek",
+            data=gdata,sheet = "DADOS2",
+            range = "A1",reformat = FALSE)
 
 
 
