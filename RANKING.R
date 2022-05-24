@@ -185,9 +185,9 @@ gsales <- dt %>% group_by(SETOR,CODGRUPO,GRUPO) %>%
     
     YTD22=sum(VRVENDA[floor_date(PEDDTBAIXA,"day") >= floor_date(Sys.Date(), "year") & floor_date(PEDDTBAIXA,"day") <= floor_date(Sys.Date(), "month")-1],na.rm = TRUE),
     
-    MEDIA21=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>= floor_date(Sys.Date()-years(1), "year") & floor_date(PEDDTBAIXA,"day") < floor_date(Sys.Date(), "year")-1]/as.numeric(length(seq(floor_date(Sys.Date(),"year"),floor_date(Sys.Date(),"month"),by="month"))-1),na.rm = TRUE),
+    MEDIA21=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>= floor_date(Sys.Date()-years(1), "year") & floor_date(PEDDTBAIXA,"day") <= floor_date(Sys.Date()-years(1), "month")-1]/as.numeric(length(seq(floor_date(Sys.Date(),"year"),floor_date(Sys.Date(),"month"),by="month"))-1),na.rm = TRUE),
     
-    MEDIA22=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>= floor_date(Sys.Date(), "year") & floor_date(PEDDTBAIXA,"day") < floor_date(Sys.Date(), "month")]/as.numeric(length(seq(floor_date(Sys.Date(),"year"),floor_date(Sys.Date(),"month"),by="month"))-1),na.rm = TRUE),
+    MEDIA22=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>= floor_date(Sys.Date(), "year") & floor_date(PEDDTBAIXA,"day") <= floor_date(Sys.Date(), "month")]/as.numeric(length(seq(floor_date(Sys.Date(),"year"),floor_date(Sys.Date(),"month"),by="month"))-1),na.rm = TRUE),
     
     PAST12=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")< Sys.Date()],na.rm = TRUE),
     
@@ -202,7 +202,7 @@ gsales <- gsales %>%  mutate(STATUS=case_when(
   VAR2022>0 ~ 'CRESCIMENTO',
   VAR2022<0 ~ 'QUEDA',
   PAST12==0  ~ 'PERDIDO',
-  YTD20==0 & YTD21>0 ~ 'RECUPERADO',
+  YTD21==0 & YTD22>0 ~ 'RECUPERADO',
   TRUE ~ ''
 ))
 
