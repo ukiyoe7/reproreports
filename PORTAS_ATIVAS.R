@@ -7,6 +7,7 @@ library(lubridate)
 library(openxlsx)
 library(ggplot2)
 library(reshape2)
+library(bindata)
 
 con2 <- dbConnect(odbc::odbc(), "repro",encoding="Latin1")
 
@@ -65,13 +66,74 @@ giro %>% select(MES,ANO,GIRO) %>% dcast(MES ~ ANO)
 giro4 <- "GIRO"
 
 
+## CLIENTES AUSENTES ================================================
+
+ausentes_penultimo_mes <-
+  anti_join(
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date() - months(3), "month"))) %>% 
+      distinct(CLICODIGO) 
+    ,
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date() - months(2), "month"))) %>% 
+      distinct(CLICODIGO)
+    ,by="CLICODIGO") 
+
+
+ausentes_ultimo_mes <-
+  anti_join(
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date() - months(2), "month"))) %>% 
+      distinct(CLICODIGO) 
+    ,
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date() - months(1), "month"))) %>% 
+      distinct(CLICODIGO)
+    ,by="CLICODIGO") 
+
+
+ausentes_mes_atual <-
+  anti_join(
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date() - months(1), "month"))) %>% 
+      distinct(CLICODIGO) 
+    ,
+    portas_ativas %>% 
+      filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date(), "month"))) %>% 
+      distinct(CLICODIGO)
+    ,by="CLICODIGO") 
+
+
+max_rows <- max(nrow(ausentes_penultimo_mes), nrow(ausentes_ultimo_mes), nrow(ausentes_mes_atual))
+
+ausentes <-
+cbind(
+ausentes_penultimo_mes %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.)))),
+ausentes_ultimo_mes %>%  rbind(data.frame(CLICODIGO= rep(NA, max_rows - nrow(.)))),
+ausentes_mes_atual %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.))))) %>% as.data.frame() 
+
+
+ausentes2 <- ausentes %>%
+  rename_at(vars(1:3), ~ c(
+    format(Sys.Date() - months(2), "%B"),
+    format(Sys.Date() - months(1), "%B"),
+    format(Sys.Date(), "%B")
+  ))
+
+# View the renamed dataframe
+View(ausentes2)
+
+
+
+
 ## CHART PORTAS ATIVAS ==================================================
 
 portas_ativas_plot <-
 portas_ativas2 %>% 
   ggplot(.,aes(x=MES,y=PORTAS_ATIVAS,color=as.factor(ANO),group = as.factor(ANO))) + geom_line() +
-  scale_color_manual(values = c("2022" = "#8297b0", "2023" = "#faf31e"))  +
+  scale_color_manual(values = c("2023" = "#8297b0", "2024" = "#faf31e"))  +
   geom_text(aes(label = PORTAS_ATIVAS), vjust = -0.5, hjust = 1,size=5) +
+  geom_point(size = 4.5) +
   theme_minimal() +
   theme(
     plot.background = element_rect(fill = "#324254"),
@@ -89,7 +151,8 @@ portas_ativas2 %>%
     panel.grid.major.x = element_line(colour = "#425266"),
     legend.position = "top",
     axis.text.x = element_text(size = 15),
-    legend.key.size = unit(2, "lines") 
+    legend.key.size = unit(2, "lines"),
+    axis.text.y = element_blank()
   ) +
   guides(color = guide_legend(title = NULL))
 
@@ -103,8 +166,8 @@ giro_plot <-
   giro %>% 
   ggplot(.,aes(x=MES,y=GIRO,color=as.factor(ANO),group = as.factor(ANO))) + 
   geom_line() +
-  geom_point(size = 3) +
-  scale_color_manual(values = c("2022" = "#8297b0", "2023" = "#00ffff"))  +
+  geom_point(size = 4.5) +
+  scale_color_manual(values = c("2023" = "#8297b0", "2024" = "#00ffff"))  +
   geom_text(aes(label = GIRO), vjust = -0.5, hjust = 1,size=5) +
   theme_minimal() +
   theme(
@@ -123,7 +186,8 @@ giro_plot <-
     panel.grid.major.x = element_line(colour = "#425266"),
     legend.position = "top",
     axis.text.x = element_text(size = 15),
-    legend.key.size = unit(2, "lines") 
+    legend.key.size = unit(2, "lines"),
+    axis.text.y = element_blank()
   ) +
   guides(color = guide_legend(title = NULL))
 
@@ -142,19 +206,26 @@ wb <- createWorkbook()
 
 addWorksheet(wb, "DADOS")
 
-writeData(wb, "DADOS", data_atual, startCol = 1, startRow = 1)
+# DATA ATUAL
 
-writeDataTable(wb, "DADOS", portas_ativas3, startRow = 4, startCol = 1, tableStyle = "TableStyleMedium20")
-
-
-writeData(wb, "DADOS", qtd_pcs4, startCol = 5, startRow = 3)
-
-writeDataTable(wb, "DADOS", qtd_pcs3, startRow = 4, startCol = 5, tableStyle = "TableStyleMedium21")
+writeData(wb, "DADOS", data_atual, startCol = 2, startRow = 1)
 
 
-writeData(wb, "DADOS", giro4, startCol = 9, startRow = 3)
+writeData(wb, "DADOS", portas_ativas4, startCol = 2, startRow = 3)
 
-writeDataTable(wb, "DADOS", giro3, startRow = 4, startCol = 9, tableStyle = "TableStyleMedium22")
+writeDataTable(wb, "DADOS", portas_ativas3, startRow = 4, startCol = 2,tableStyle = "TableStyleMedium20")
+
+
+
+
+writeData(wb, "DADOS", qtd_pcs4, startCol = 6, startRow = 3)
+
+writeDataTable(wb, "DADOS", qtd_pcs3, startRow = 4, startCol = 6, tableStyle = "TableStyleMedium21")
+
+
+writeData(wb, "DADOS", giro4, startCol = 10, startRow = 3)
+
+writeDataTable(wb, "DADOS", giro3, startRow = 4, startCol = 10, tableStyle = "TableStyleMedium19")
 
 
 ## PORTAS ATIVAS
