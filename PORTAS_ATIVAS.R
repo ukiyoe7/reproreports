@@ -20,7 +20,6 @@ data_atual <- paste0("DATA: ",format(Sys.Date(),"%d/%m/%Y"))
 
 portas_ativas <- dbGetQuery(con2, statement = read_file('SQL/PORTAS_ATIVAS.sql'))
 
-View(portas_ativas)
 
 portas_ativas2 <- 
  portas_ativas %>% 
@@ -37,8 +36,6 @@ portas_ativas4 <- "PORTAS ATIVAS"
 
 
 qtd_pcs <- dbGetQuery(con2, statement = read_file('SQL/QTD_PCS.sql'))
-
-View(qtd_pcs)
 
 
 qtd_pcs2 <-  
@@ -58,7 +55,6 @@ qtd_pcs4 <- "QTD PEÇAS"
 giro <-
 left_join(portas_ativas2,qtd_pcs2,by=c("MES","ANO")) %>% mutate(GIRO=round(QTD/PORTAS_ATIVAS,2))
 
-View(giro)
 
 giro3 <-
 giro %>% select(MES,ANO,GIRO) %>% dcast(MES ~ ANO)
@@ -68,6 +64,8 @@ giro4 <- "GIRO"
 
 ## CLIENTES AUSENTES ================================================
 
+
+# missing 2 months ago compared to 3 months ago
 ausentes_penultimo_mes <-
   anti_join(
     portas_ativas %>% 
@@ -80,6 +78,7 @@ ausentes_penultimo_mes <-
     ,by="CLICODIGO") 
 
 
+# missing 1 months ago compared to 2 months ago
 ausentes_ultimo_mes <-
   anti_join(
     portas_ativas %>% 
@@ -92,6 +91,8 @@ ausentes_ultimo_mes <-
     ,by="CLICODIGO") 
 
 
+#  missing current month compared to 1 month ago
+
 ausentes_mes_atual <-
   anti_join(
     portas_ativas %>% 
@@ -101,28 +102,41 @@ ausentes_mes_atual <-
     portas_ativas %>% 
       filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date(), "month"))) %>% 
       distinct(CLICODIGO)
-    ,by="CLICODIGO") 
+    ,by="CLICODIGO")
+  
+  
+ausentes_mes_atual2 <-  
+  anti_join(ausentes_mes_atual,inner_join(ausentes_penultimo_mes,ausentes_mes_atual,by="CLICODIGO"),by="CLICODIGO")
 
 
-max_rows <- max(nrow(ausentes_penultimo_mes), nrow(ausentes_ultimo_mes), nrow(ausentes_mes_atual))
+ausentes_penultimo_mes2 <-  
+  anti_join(ausentes_penultimo_mes,inner_join(ausentes_penultimo_mes,portas_ativas %>% 
+                                                filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date(), "month"))) %>% 
+                                                distinct(CLICODIGO),by="CLICODIGO"),by="CLICODIGO")
 
+
+ausentes_penultimo_mes3 <-  
+  anti_join(ausentes_penultimo_mes,inner_join(ausentes_penultimo_mes2,portas_ativas %>% 
+                                                filter(floor_date(PEDDTBAIXA, "month")== as.Date(floor_date(Sys.Date()- months(1), "month"))) %>% 
+                                                distinct(CLICODIGO),by="CLICODIGO"),by="CLICODIGO")
+
+# max value df
+max_rows <- max(nrow(ausentes_penultimo_mes3), nrow(ausentes_ultimo_mes), nrow(ausentes_mes_atual2))
+
+
+# complete missing values and bind columns
 ausentes <-
 cbind(
-ausentes_penultimo_mes %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.)))),
+ausentes_penultimo_mes3 %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.)))),
 ausentes_ultimo_mes %>%  rbind(data.frame(CLICODIGO= rep(NA, max_rows - nrow(.)))),
-ausentes_mes_atual %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.))))) %>% as.data.frame() 
+ausentes_mes_atual2 %>%  rbind(data.frame(CLICODIGO = rep(NA, max_rows - nrow(.))))) %>% as.data.frame() 
 
 
-ausentes2 <- ausentes %>%
-  rename_at(vars(1:3), ~ c(
-    format(Sys.Date() - months(2), "%B"),
-    format(Sys.Date() - months(1), "%B"),
-    format(Sys.Date(), "%B")
-  ))
-
-# View the renamed dataframe
-View(ausentes2)
-
+ausentes2 <-
+ausentes %>% 
+  setNames(c(format(Sys.Date() - months(2), "%B"), 
+             format(Sys.Date() - months(1), "%B"), 
+             format(Sys.Date(), "%B"))) 
 
 
 
@@ -216,8 +230,6 @@ writeData(wb, "DADOS", portas_ativas4, startCol = 2, startRow = 3)
 writeDataTable(wb, "DADOS", portas_ativas3, startRow = 4, startCol = 2,tableStyle = "TableStyleMedium20")
 
 
-
-
 writeData(wb, "DADOS", qtd_pcs4, startCol = 6, startRow = 3)
 
 writeDataTable(wb, "DADOS", qtd_pcs3, startRow = 4, startCol = 6, tableStyle = "TableStyleMedium21")
@@ -228,13 +240,26 @@ writeData(wb, "DADOS", giro4, startCol = 10, startRow = 3)
 writeDataTable(wb, "DADOS", giro3, startRow = 4, startCol = 10, tableStyle = "TableStyleMedium19")
 
 
-## PORTAS ATIVAS
+## CLIENTES AUSENTES ===========================================
+
+
+addWorksheet(wb, "CLIENTES AUSENTES")
+
+
+writeDataTable(wb, "CLIENTES AUSENTES", ausentes2, startRow = 4, startCol = 2,tableStyle = "TableStyleMedium20")
+
+
+
+## PORTAS ATIVAS =========================================
+
 
 addWorksheet(wb, "PORTAS ATIVAS")
 
 insertImage(wb, "PORTAS ATIVAS", "portas_ativas_plot.jpg",units = "in", width = 9, height =5,startRow = 1, startCol = 1)
 
-## GIRO
+
+## GIRO =================================================
+
 
 addWorksheet(wb, "GIRO")
 
