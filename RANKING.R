@@ -1,17 +1,14 @@
-## RANKING DE CLIENTES
-## 03.2024
+## RANKING CLIENTS
+## LAST UPDATE 15.03.2024
 ## SANDRO JAKOSKA
 
-## LIBRARIES =======================================================================
+## LOAD =======================================================================
 
 library(tidyverse)
 library(lubridate)
 library(reshape2)
 library(DBI)
 library(openxlsx)
-
-## DB CONNECTION ====================================================================
-
 
 con2 <- dbConnect(odbc::odbc(), "repro",encoding="Latin1")
 
@@ -109,7 +106,13 @@ SELECT CLICODIGO,
   WHERE TBPCODIGO IN (100,101,102,103,104,105,201,202,301,302,303,304,305,308,309,3660,3661)
   ") 
 
-mdesc <- desct %>% dcast(.,CLICODIGO ~ LINHA,value.var = "TBPDESC2",fun.aggregate = mean,na.rm = TRUE) %>% as.data.frame() 
+mean_no_zero <- function(x) {
+  x <- x[x != 0] 
+  if (length(x) == 0) return(as.double(NA))  
+  mean(x, na.rm = TRUE)  
+}
+
+mdesc <- desct %>% dcast(.,CLICODIGO ~ LINHA,value.var = "TBPDESC2",fun.aggregate = mean_no_zero) %>% as.data.frame() 
 
 gdesct <- dbGetQuery(con2,"
 SELECT C.CLICODIGO,
@@ -189,21 +192,18 @@ data <- data %>%  mutate(STATUS=case_when(
   TRUE ~ ''
 ))
 
-LASTMONTHLASTYEAR1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y")))
+LASTMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y"))
 
-LASTMONTHTHISYEAR1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y")))
+LASTMONTHTHISYEAR1 <- toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y"))
 
-CURRENTMONTH1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y")))
+CURRENTMONTH1 <- toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y"))
 
 data <- data %>% arrange(desc(.$YTD23)) %>% as.data.frame() %>% 
-  rename_at(9:11,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(1:3,5,6,9:13,18,34,14:15,32,19:31,7)] %>% mutate_all(~replace(., is.nan(.), NA))
+  rename_at(9:11,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(1:6,9:13,18,34,14:15,7,19:33)] %>% mutate_all(~replace(., is.nan(.), NA))
 
 
 
-
-
-
-##  RANKING GRUPOS ==========================================================================
+##  RANKING GROUPS ==========================================================================
 
 
 dt <- left_join(anti_join(clientes,inativos,by="CLICODIGO"),sales,by="CLICODIGO") %>% as.data.frame()
@@ -253,25 +253,27 @@ gdata <- gdata %>% left_join(.,gdesct,by="CODGRUPO") %>% as.data.frame()
 
 gdata <- gdata %>% filter(CODGRUPO!='')
 
-LASTMONTHLASTYEAR1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y")))
+LASTMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y"))
 
-LASTMONTHTHISYEAR1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y")))
+LASTMONTHTHISYEAR1 <- toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y"))
 
-CURRENTMONTH1 <- gsub("/", "_",toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y")))
+CURRENTMONTH1 <- toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y"))
 
 
 gdata <- gdata %>% arrange(desc(.$YTD24)) %>% as.data.frame() %>% 
-  rename_at(4:6,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(1:8,13,14,9,10,28,15:27,29)]
+  rename_at(4:6,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(2,3,1,4:8,13,14,9,10,15:29)] %>% mutate_all(~replace(., is.nan(.), NA))
 
-## EXCEL ===============================
+
+## CREATE EXCEL ===============================
+
 
 wb <- createWorkbook()
 
-# Adicionar uma nova aba (sheet)
+
+## sheet ranking
 
 addWorksheet(wb, "RANKING")
 
-# Escrever dados em uma aba
 writeData(wb, sheet = "RANKING", x = data)
 
 setColWidths(wb, sheet = "RANKING", cols = 1, widths = 12)
@@ -282,37 +284,77 @@ setColWidths(wb, sheet = "RANKING", cols = 3, widths = 12)
 
 setColWidths(wb, sheet = "RANKING", cols = 4, widths = 30)
 
-setColWidths(wb, sheet = "RANKING", cols = 5, widths = 25)
+setColWidths(wb, sheet = "RANKING", cols = 5, widths = 30)
 
-setColWidths(wb, sheet = "RANKING", cols = 6:11, widths = 10)
+setColWidths(wb, sheet = "RANKING", cols = 6, widths = 20)
 
-setColWidths(wb, sheet = "RANKING", cols = 12, widths = 20)
+setColWidths(wb, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb, sheet = "RANKING", cols = 13:14, widths = 10)
+setColWidths(wb, sheet = "RANKING", cols = 13, widths = 17)
 
-setColWidths(wb, sheet = "RANKING", cols = 15:29, widths = 15)
+setColWidths(wb, sheet = "RANKING", cols = 14:15, widths = 15)
+
+setColWidths(wb, sheet = "RANKING", cols = 16:31, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+## format numbers
+
 estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb, sheet = "RANKING", style = estiloNumerico, cols = c(6:10,13:14), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
 
-addStyle(wb, sheet = "RANKING", style = estiloPorcentagem, cols = 11, rows = 1:3000, gridExpand = TRUE)
+addStyle(wb, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
-# Aplicar formatação condicional
+## cond format class
 
-conditionalFormatting(wb, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 == "QUEDA"', style = queda)
+conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
 
 writeDataTable(wb, "RANKING", data, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
 
-# Salvar o workbook em um arquivo
+## sheet ranking groups
+
+addWorksheet(wb, "RANKING GRUPOS")
+
+writeData(wb, sheet = "RANKING GRUPOS", x = gdata)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 1, widths = 12)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 2, widths = 40)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+
+crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
+
+queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+
+addStyle(wb, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
+
+
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+
+writeDataTable(wb, "RANKING GRUPOS", gdata, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+
+
 saveWorkbook(wb, file = "RANKING_CLIENTES.xlsx", overwrite = TRUE)
 
