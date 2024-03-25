@@ -84,9 +84,9 @@ SELECT CLICODIGO,
  TBPCODIGO,
   TBPDESC2,
    CASE 
-    WHEN TBPCODIGO=100 THEN 'VARILUX'
-    WHEN TBPCODIGO=101 THEN 'VARILUX' 
-    WHEN TBPCODIGO=102 THEN 'VARILUX'
+    WHEN TBPCODIGO=100 THEN 'VARILUX XR'
+    WHEN TBPCODIGO=101 THEN 'VARILUX TRAD' 
+    WHEN TBPCODIGO=102 THEN 'VARILUX DIGI'
     WHEN TBPCODIGO=103 THEN 'LA CRIZAL'
     WHEN TBPCODIGO=104 THEN 'LA KODAK' 
     WHEN TBPCODIGO=105 THEN 'VS ESSILOR'
@@ -112,7 +112,7 @@ mean_no_zero <- function(x) {
   mean(x, na.rm = TRUE)  
 }
 
-mdesc <- desct %>% dcast(.,CLICODIGO ~ LINHA,value.var = "TBPDESC2",fun.aggregate = mean_no_zero) %>% as.data.frame() 
+mdesc <- desct %>% dcast(.,CLICODIGO ~ LINHA,value.var = "TBPDESC2",fun.aggregate = sum) %>% as.data.frame() 
 
 gdesct <- dbGetQuery(con2,"
 SELECT C.CLICODIGO,
@@ -120,9 +120,9 @@ CODGRUPO,
  TBPCODIGO,
   TBPDESC2,
    CASE 
-   WHEN TBPCODIGO=100 THEN 'VARILUX'
-    WHEN TBPCODIGO=101 THEN 'VARILUX' 
-    WHEN TBPCODIGO=102 THEN 'VARILUX'
+   WHEN TBPCODIGO=100 THEN 'VARILUX XR'
+    WHEN TBPCODIGO=101 THEN 'VARILUX TRAD' 
+    WHEN TBPCODIGO=102 THEN 'VARILUX DIGI'
     WHEN TBPCODIGO=103 THEN 'LA CRIZAL'
     WHEN TBPCODIGO=104 THEN 'LA KODAK' 
     WHEN TBPCODIGO=105 THEN 'VS ESSILOR'
@@ -144,16 +144,17 @@ CODGRUPO,
   ON C.CLICODIGO=A.CLICODIGO
   WHERE TBPCODIGO IN (100,101,102,103,104,105,201,202,301,302,303,304,305,308,309,3660,3661)
   ") %>% filter(CODGRUPO!='') %>% group_by(CODGRUPO,LINHA) %>% summarise(m=mean(TBPDESC2)) %>% 
-  dcast(.,CODGRUPO ~ LINHA,mean) %>% replace(is.na(.),0) %>% apply(.,2,function(x) round(x,0)) %>% as.data.frame()
+  dcast(.,CODGRUPO ~ LINHA,mean_no_zero) %>% replace(is.na(.),0) %>% apply(.,2,function(x) round(x,0)) %>% as.data.frame()
 
 
 ##  RANKING CLIENTS ==========================================================================
 
 nsales <- sales %>% group_by(CLICODIGO) %>% 
   summarize(
-    LASTMONTHLASTYEAR=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date((Sys.Date()-years(1)) %m-% months(1), 'month') & floor_date(PEDDTBAIXA,"day")<=ceiling_date((Sys.Date()-years(1)) %m-% months(1), 'month') %m-% days(1)],na.rm = TRUE),
     
     LASTMONTHTHISYEAR=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date(Sys.Date() %m-% months(1), 'month') & floor_date(PEDDTBAIXA,"day")<=ceiling_date(Sys.Date() %m-% months(1), 'month') %m-% days(1)],na.rm = TRUE),
+    
+    THISMONTHLASTYEAR=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date((Sys.Date()-years(1)), 'month') & floor_date(PEDDTBAIXA,"day")<=floor_date(Sys.Date()-years(1), "day")-1],na.rm = TRUE),
     
     CURRENTMONTH=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date(Sys.Date(), "month") & floor_date(PEDDTBAIXA,"day")<=ceiling_date(Sys.Date(),'month') %m-% days(1)],na.rm = TRUE),
     
@@ -175,7 +176,9 @@ nsales <- sales %>% group_by(CLICODIGO) %>%
     PAST12=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")< Sys.Date()],na.rm = TRUE),
     
     SEMRECEITA=sum(VRVENDA[floor_date(PEDDTBAIXA,"day") >  ceiling_date(Sys.Date() %m-% months(1), 'month') %m-% days(1)])
-  ) %>% mutate(VAR24=ifelse(is.finite(YTD24/YTD23-1),YTD24/YTD23-1,0))
+  ) %>% mutate(VAR24=ifelse(is.finite(YTD24/YTD23-1),YTD24/YTD23-1,0)) %>% 
+    
+  mutate(VAR24_VLR=ifelse(is.finite(YTD24-YTD23),YTD24-YTD23,0))
 
 nsales <- apply(nsales,2,function(x) round(x,2)) %>% as.data.frame()
 
@@ -192,15 +195,14 @@ data <- data %>%  mutate(STATUS=case_when(
   TRUE ~ ''
 ))
 
-LASTMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y"))
+THISMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month"),"%b%/%Y"))
 
 LASTMONTHTHISYEAR1 <- toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y"))
 
 CURRENTMONTH1 <- toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y"))
 
 data <- data %>% arrange(desc(.$YTD23)) %>% as.data.frame() %>% 
-  rename_at(9:11,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(1:6,9:13,18,34,14:15,7,19:33)] %>% mutate_all(~replace(., is.nan(.), NA))
-
+  rename_at(9:11,~ c(LASTMONTHTHISYEAR1,THISMONTHLASTYEAR1,CURRENTMONTH1)) %>% .[,c(1, 2, 3, 4, 5, 6,9,10, 11, 12, 13, 18,19,37,14,15,33,34,35,26,27,20,21,23,24,25,32,22,28,30,31,36,7)] %>% mutate_all(~replace(., is.nan(.), NA))
 
 
 ##  RANKING GROUPS ==========================================================================
@@ -210,9 +212,10 @@ dt <- left_join(anti_join(clientes,inativos,by="CLICODIGO"),sales,by="CLICODIGO"
 
 gsales <- dt %>% group_by(SETOR,CODGRUPO,GRUPO) %>% 
   summarize(
-    LASTMONTHLASTYEAR2=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date((Sys.Date()-years(1)) %m-% months(1), 'month') & floor_date(PEDDTBAIXA,"day")<=ceiling_date((Sys.Date()-years(1)) %m-% months(1), 'month') %m-% days(1)],na.rm = TRUE),
     
     LASTMONTHTHISYEAR2=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date(Sys.Date() %m-% months(1), 'month') & floor_date(PEDDTBAIXA,"day")<=ceiling_date(Sys.Date() %m-% months(1), 'month') %m-% days(1)],na.rm = TRUE),
+    
+    THISMONTHLASTYEAR=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date((Sys.Date()-years(1)), 'month') & floor_date(PEDDTBAIXA,"day")<=floor_date(Sys.Date()-years(1), "day")-1],na.rm = TRUE),
     
     CURRENTMONTH2=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>=floor_date(Sys.Date(), "month") & floor_date(PEDDTBAIXA,"day")<=ceiling_date(Sys.Date(),'month') %m-% days(1)],na.rm = TRUE),
     
@@ -234,7 +237,9 @@ gsales <- dt %>% group_by(SETOR,CODGRUPO,GRUPO) %>%
     PAST12=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")< Sys.Date()],na.rm = TRUE),
     
     SEMRECEITA=sum(VRVENDA[floor_date(PEDDTBAIXA,"day") >  ceiling_date(Sys.Date() %m-% months(1), 'month') %m-% days(1)])
-  ) %>% mutate(VAR24=ifelse(is.finite(YTD24/YTD23-1),YTD24/YTD23-1,0)) 
+  ) %>% mutate(VAR24=ifelse(is.finite(YTD24/YTD23-1),YTD24/YTD23-1,0)) %>% 
+  
+  mutate(VAR24_VLR=ifelse(is.finite(YTD24-YTD23),YTD24-YTD23,0)) 
 
 gsales <- gsales %>%  mutate(STATUS=case_when(
   SEMRECEITA==0 ~ 'SEM RECEITA',
@@ -245,15 +250,15 @@ gsales <- gsales %>%  mutate(STATUS=case_when(
   TRUE ~ ''
 ))
 
-gdata <-apply(gsales[,4:13],2,function(x) round(x,2)) %>% as.data.frame() %>% 
-  cbind(gsales[,1:3],.) %>% cbind(.,gsales[,14])
+gdata <-apply(gsales[,4:14],2,function(x) round(x,2)) %>% as.data.frame() %>% 
+  cbind(gsales[,1:3],.) %>% cbind(.,gsales[,15])
 
 
 gdata <- gdata %>% left_join(.,gdesct,by="CODGRUPO") %>% as.data.frame()
 
 gdata <- gdata %>% filter(CODGRUPO!='')
 
-LASTMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month")-1,"%b%/%Y"))
+THISMONTHLASTYEAR1 <- toupper(format(floor_date(Sys.Date()-years(1), "month"),"%b%/%Y"))
 
 LASTMONTHTHISYEAR1 <- toupper(format(floor_date(Sys.Date(), "month")-1,"%b%/%Y"))
 
@@ -261,7 +266,8 @@ CURRENTMONTH1 <- toupper(format(floor_date(Sys.Date(), "month"),"%b%/%Y"))
 
 
 gdata <- gdata %>% arrange(desc(.$YTD24)) %>% as.data.frame() %>% 
-  rename_at(4:6,~ c(LASTMONTHLASTYEAR1,LASTMONTHTHISYEAR1,CURRENTMONTH1)) %>% .[,c(2,3,1,4:8,13,14,9,10,15:29)] %>% mutate_all(~replace(., is.nan(.), NA))
+  rename_at(4:6,~ c(LASTMONTHTHISYEAR1,THISMONTHLASTYEAR1,CURRENTMONTH1)) %>% .[,c(2,1,3,4,5, 6, 7, 8, 13, 14, 15,9,10, 29,30,31, 22,23,25, 16, 17, 19, 20, 21,28,18,24, 26,27,32)] %>% mutate_all(~replace(., is.nan(.), NA))
+
 
 
 ## CREATE EXCEL ===============================
@@ -291,11 +297,13 @@ setColWidths(wb, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
@@ -307,15 +315,15 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
 
 writeDataTable(wb, "RANKING", data, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -334,25 +342,27 @@ setColWidths(wb, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
 
-addStyle(wb, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
 
 writeDataTable(wb, "RANKING GRUPOS", gdata, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
