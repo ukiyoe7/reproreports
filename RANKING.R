@@ -309,6 +309,8 @@ crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
+
 ## format numbers
 
 estiloNumerico <- createStyle(numFmt = "#,##0")
@@ -324,6 +326,11 @@ addStyle(wb, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3
 conditionalFormatting(wb, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
 conditionalFormatting(wb, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb, "RANKING", data, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -354,6 +361,8 @@ crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
+
 
 addStyle(wb, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
@@ -363,6 +372,10 @@ addStyle(wb, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows
 conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
 conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb, "RANKING GRUPOS", gdata, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -395,15 +408,19 @@ setColWidths(wb_st1, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb_st1, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st1, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st1, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st1, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st1, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st1, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st1, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st1, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -411,15 +428,20 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st1, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st1, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st1, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st1, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st1, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st1, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st1, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st1, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st1, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb_st1, "RANKING", data %>% filter(SETOR=="SETOR 1 - FLORIANOPOLIS REDES"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -438,25 +460,33 @@ setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st1, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
 
-addStyle(wb_st1, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb_st1, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st1, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st1, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb_st1, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 1 - FLORIANOPOLIS REDES"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -489,15 +519,19 @@ setColWidths(wb_st2, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb_st2, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st2, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st2, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st2, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st2, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st2, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st2, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st2, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -505,15 +539,20 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st2, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st2, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st2, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st2, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st2, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st2, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st2, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st2, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st2, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb_st2, "RANKING", data %>% filter(SETOR=="SETOR 2 - CRICIUMA - SUL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -532,25 +571,33 @@ setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st2, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
 
-addStyle(wb_st2, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb_st2, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st2, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st2, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb_st2, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 2 - CRICIUMA - SUL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -583,15 +630,19 @@ setColWidths(wb_st3, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb_st3, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st3, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st3, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st3, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st3, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st3, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st3, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st3, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -599,15 +650,20 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st3, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st3, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st3, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st3, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st3, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st3, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st3, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st3, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st3, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb_st3, "RANKING", data %>% filter(SETOR=="SETOR 3 - CHAPECO - OESTE - RS"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -626,25 +682,33 @@ setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st3, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
 
-addStyle(wb_st3, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb_st3, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st3, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st3, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb_st3, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 3 - CHAPECO - OESTE - RS"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -654,38 +718,42 @@ saveWorkbook(wb_st3, file = "RANKING_CLIENTES_SETOR_3.xlsx", overwrite = TRUE)
 ## SETOR 4 ======
 
 
-wb_st4 <- createWorkbook()
+wb_st5 <- createWorkbook()
 
 
 ## sheet ranking
 
-addWorksheet(wb_st4, "RANKING")
+addWorksheet(wb_st5, "RANKING")
 
-writeData(wb_st4, sheet = "RANKING", x = data %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"))
+writeData(wb_st5, sheet = "RANKING", x = data %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"))
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 1, widths = 12)
+setColWidths(wb_st5, sheet = "RANKING", cols = 1, widths = 12)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 2, widths = 40)
+setColWidths(wb_st5, sheet = "RANKING", cols = 2, widths = 40)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 3, widths = 12)
+setColWidths(wb_st5, sheet = "RANKING", cols = 3, widths = 12)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 4, widths = 30)
+setColWidths(wb_st5, sheet = "RANKING", cols = 4, widths = 30)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 5, widths = 30)
+setColWidths(wb_st5, sheet = "RANKING", cols = 5, widths = 30)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 6, widths = 20)
+setColWidths(wb_st5, sheet = "RANKING", cols = 6, widths = 20)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 7:12, widths = 12)
+setColWidths(wb_st5, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st5, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st4, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st5, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -693,57 +761,70 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st4, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st5, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
-addStyle(wb_st4, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st5, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st4, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st4, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
 
-writeDataTable(wb_st4, "RANKING", data %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
+
+writeDataTable(wb_st5, "RANKING", data %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
 
 ## sheet ranking groups
 
-addWorksheet(wb_st4, "RANKING GRUPOS")
+addWorksheet(wb_st5, "RANKING GRUPOS")
 
-writeData(wb_st4, sheet = "RANKING GRUPOS", x = gdata %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"))
+writeData(wb_st5, sheet = "RANKING GRUPOS", x = gdata %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"))
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 1, widths = 12)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 1, widths = 12)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 2, widths = 40)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 2, widths = 40)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st4, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
-
-addStyle(wb_st4, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
-
-addStyle(wb_st4, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
+queda2 <- createStyle(fontColour = "#FF0800")
 
 
-conditionalFormatting(wb_st4, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+addStyle(wb_st5, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
-conditionalFormatting(wb_st4, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
-
-writeDataTable(wb_st4, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+addStyle(wb_st5, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-saveWorkbook(wb_st4, file = "RANKING_CLIENTES_SETOR_4.xlsx", overwrite = TRUE)
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
+
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
+
+writeDataTable(wb_st5, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 4 - JOINVILLE - NORTE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+
+
+saveWorkbook(wb_st5, file = "RANKING_CLIENTES_SETOR_4.xlsx", overwrite = TRUE)
 
 ## SETOR 5 ======
 
@@ -771,15 +852,19 @@ setColWidths(wb_st5, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb_st5, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st5, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st5, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st5, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st5, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st5, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -787,15 +872,20 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st5, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st5, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st5, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st5, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st5, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st5, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb_st5, "RANKING", data %>% filter(SETOR=="SETOR 5 - BLUMENAU - VALE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -814,25 +904,33 @@ setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st5, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
 
-addStyle(wb_st5, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb_st5, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st5, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st5, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb_st5, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 5 - BLUMENAU - VALE"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -842,38 +940,42 @@ saveWorkbook(wb_st5, file = "RANKING_CLIENTES_SETOR_5.xlsx", overwrite = TRUE)
 ## SETOR 6 ======
 
 
-wb_st6 <- createWorkbook()
+wb_st7 <- createWorkbook()
 
 
 ## sheet ranking
 
-addWorksheet(wb_st6, "RANKING")
+addWorksheet(wb_st7, "RANKING")
 
-writeData(wb_st6, sheet = "RANKING", x = data %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"))
+writeData(wb_st7, sheet = "RANKING", x = data %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"))
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 1, widths = 12)
+setColWidths(wb_st7, sheet = "RANKING", cols = 1, widths = 12)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 2, widths = 40)
+setColWidths(wb_st7, sheet = "RANKING", cols = 2, widths = 40)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 3, widths = 12)
+setColWidths(wb_st7, sheet = "RANKING", cols = 3, widths = 12)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 4, widths = 30)
+setColWidths(wb_st7, sheet = "RANKING", cols = 4, widths = 30)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 5, widths = 30)
+setColWidths(wb_st7, sheet = "RANKING", cols = 5, widths = 30)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 6, widths = 20)
+setColWidths(wb_st7, sheet = "RANKING", cols = 6, widths = 20)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 7:12, widths = 12)
+setColWidths(wb_st7, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st7, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st6, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st7, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -881,57 +983,70 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st6, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st7, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
-addStyle(wb_st6, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st7, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st6, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st6, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
 
-writeDataTable(wb_st6, "RANKING", data %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
+
+writeDataTable(wb_st7, "RANKING", data %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
 
 ## sheet ranking groups
 
-addWorksheet(wb_st6, "RANKING GRUPOS")
+addWorksheet(wb_st7, "RANKING GRUPOS")
 
-writeData(wb_st6, sheet = "RANKING GRUPOS", x = gdata %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"))
+writeData(wb_st7, sheet = "RANKING GRUPOS", x = gdata %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"))
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 1, widths = 12)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 1, widths = 12)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 2, widths = 40)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 2, widths = 40)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st6, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
-
-addStyle(wb_st6, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
-
-addStyle(wb_st6, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
+queda2 <- createStyle(fontColour = "#FF0800")
 
 
-conditionalFormatting(wb_st6, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+addStyle(wb_st7, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
-conditionalFormatting(wb_st6, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
-
-writeDataTable(wb_st6, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+addStyle(wb_st7, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-saveWorkbook(wb_st6, file = "RANKING_CLIENTES_SETOR_6.xlsx", overwrite = TRUE)
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
+
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
+
+writeDataTable(wb_st7, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 6 - B CAMBORIU - LITORAL"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+
+
+saveWorkbook(wb_st7, file = "RANKING_CLIENTES_SETOR_6.xlsx", overwrite = TRUE)
 
 ## SETOR 7 ======
 
@@ -959,15 +1074,19 @@ setColWidths(wb_st7, sheet = "RANKING", cols = 6, widths = 20)
 
 setColWidths(wb_st7, sheet = "RANKING", cols = 7:12, widths = 12)
 
-setColWidths(wb_st7, sheet = "RANKING", cols = 13, widths = 17)
+setColWidths(wb_st7, sheet = "RANKING", cols = 13, widths = 13)
 
-setColWidths(wb_st7, sheet = "RANKING", cols = 14:15, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING", cols = 14, widths = 17)
 
-setColWidths(wb_st7, sheet = "RANKING", cols = 16:31, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING", cols = 15:16, widths = 15)
+
+setColWidths(wb_st7, sheet = "RANKING", cols = 17:33, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+queda2 <- createStyle(fontColour = "#FF0800")
 
 ## format numbers
 
@@ -975,15 +1094,20 @@ estiloNumerico <- createStyle(numFmt = "#,##0")
 
 estiloPorcentagem <- createStyle(numFmt = "0%")
 
-addStyle(wb_st7, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,14:31), rows = 1:3000, gridExpand = TRUE)
+addStyle(wb_st7, sheet = "RANKING", style = estiloNumerico, cols = c(7:11,13,15:33), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st7, sheet = "RANKING", style = estiloPorcentagem, cols = 12, rows = 1:3000, gridExpand = TRUE)
 
 ## cond format class
 
-conditionalFormatting(wb_st7, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st7, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 14, rows = 1:1000, rule = 'N1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L1 < 0', style = queda2)
+
+conditionalFormatting(wb_st7, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
+
 
 writeDataTable(wb_st7, "RANKING", data %>% filter(SETOR=="SETOR 7 - FLORIANOPOLIS  LOJAS"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
@@ -1002,27 +1126,34 @@ setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 3, widths = 40)
 
 setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 4:9, widths = 10)
 
-setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 10, widths = 17)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 10, widths = 13)
 
-setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 11:12, widths = 10)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 11, widths = 17)
 
-setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 13:27, widths = 15)
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 12:13, widths = 10)
+
+setColWidths(wb_st7, sheet = "RANKING GRUPOS", cols = 14:30, widths = 15)
 
 crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
 
 queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
+queda2 <- createStyle(fontColour = "#FF0800")
 
-addStyle(wb_st7, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,11:27), rows = 1:3000, gridExpand = TRUE)
+
+addStyle(wb_st7, sheet = "RANKING GRUPOS", style = estiloNumerico, cols = c(4:8,10,12:30), rows = 1:3000, gridExpand = TRUE)
 
 addStyle(wb_st7, sheet = "RANKING GRUPOS", style = estiloPorcentagem, cols = 9, rows = 1:3000, gridExpand = TRUE)
 
 
-conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "CRESCIMENTO"', style = crescimento)
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "CRESCIMENTO"', style = crescimento)
 
-conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 == "QUEDA"', style = queda)
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 11, rows = 1:1000, rule = 'K1 == "QUEDA"', style = queda)
+
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 9, rows = 1:1000, rule = 'I1 < 0', style = queda2)
+
+conditionalFormatting(wb_st7, sheet = "RANKING GRUPOS", cols = 10, rows = 1:1000, rule = 'J1 < 0', style = queda2)
 
 writeDataTable(wb_st7, "RANKING GRUPOS", gdata %>% filter(SETOR=="SETOR 7 - FLORIANOPOLIS  LOJAS"), startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
-
 
 saveWorkbook(wb_st7, file = "RANKING_CLIENTES_SETOR_7.xlsx", overwrite = TRUE)
