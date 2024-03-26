@@ -169,7 +169,7 @@ nsales <- sales %>% group_by(CLICODIGO) %>%
                                         floor_date(Sys.Date()-years(1),"month"),by="month")))),
     
     MEDIA24=sum(VRVENDA[floor_date(PEDDTBAIXA,"day")>= floor_date(Sys.Date(), "year") & 
-                          floor_date(PEDDTBAIXA,"day") < floor_date(Sys.Date(), "day")-1]/
+                          floor_date(PEDDTBAIXA,"day") <= floor_date(Sys.Date(), "day")-1]/
                   as.numeric(length(seq(floor_date(Sys.Date(),"year"),
                                         floor_date(Sys.Date(),"day"),by="month")))),
     
@@ -332,7 +332,7 @@ conditionalFormatting(wb, sheet = "RANKING", cols = 12, rows = 1:1000, rule = 'L
 conditionalFormatting(wb, sheet = "RANKING", cols = 13, rows = 1:1000, rule = 'M1 < 0', style = queda2)
 
 
-writeDataTable(wb, "RANKING", data, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+writeDataTable(wb, "RANKING", data, startCol = 1, startRow = 1, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = TRUE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
 
 ## sheet ranking groups
