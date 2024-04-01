@@ -49,8 +49,7 @@ con2 <- dbConnect(odbc::odbc(), "repro")
             
             LACRZ AS  (SELECT PROCODIGO FROM PRODU WHERE (PRODESCRICAO LIKE '%CRIZAL%' OR PRODESCRICAO LIKE '%C.FORTE%')  AND GR1CODIGO=2),
             
-            MPR AS  (SELECT PROCODIGO FROM PRODU
-                            WHERE MARCODIGO IN (128,189,135,106,158,159,264)  AND PROTIPO<>'T'),
+            MPR AS  (SELECT PROCODIGO FROM PRODU WHERE MARCODIGO IN (128,189,135,106,158,159,264)  AND PROTIPO<>'T'),
                             
             MCLIENTE AS (SELECT PROCODIGO FROM NGRUPOS WHERE GRCODIGO=162),                
             
@@ -68,7 +67,7 @@ con2 <- dbConnect(odbc::odbc(), "repro")
                             WHEN MP.PROCODIGO IS NOT NULL THEN 'MARCA REPRO'
                              WHEN LZ.PROCODIGO IS NOT NULL THEN 'LA CRIZAL'
                               WHEN TZ.PROCODIGO IS NOT NULL THEN 'TRAT CRIZAL'
-                               WHEN MC.PROCODIGO IS NOT NULL THEN 'MARCA REPRO'
+                               WHEN MC.PROCODIGO IS NOT NULL THEN 'MARCA CLIENTE'
                                 ELSE 'OUTROS' END MARCA,
                                IIF (T.PROCODIGO IS NOT NULL,'TRANSITIONS','') TRANSITIONS,
                                 CASE 
@@ -508,9 +507,9 @@ writeData(wb_pilares, "RESUMO", "VALOR", startCol = 1, startRow = 2)
 
 writeDataTable(wb_pilares, "RESUMO", npilares_setores_resumo, startCol = 1, startRow = 3, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
-writeData(wb_pilares, "RESUMO", "QTD", startCol = 1, startRow = 13)
+writeData(wb_pilares, "RESUMO", "QTD", startCol = 1, startRow = 15)
 
-writeDataTable(wb_pilares, "RESUMO", npilares_setores_qtd_resumo, startCol = 1, startRow = 14, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+writeDataTable(wb_pilares, "RESUMO", npilares_setores_qtd_resumo, startCol = 1, startRow = 16, xy = NULL, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
 
 
 
