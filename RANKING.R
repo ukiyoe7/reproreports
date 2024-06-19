@@ -192,11 +192,12 @@ data <- left_join(anti_join(clientes,inativos,by="CLICODIGO"),nsales,by="CLICODI
 
 data <- data %>%  mutate(STATUS=case_when(
   DATACADASTRO>=floor_date(floor_date(Sys.Date() %m-% months(1), 'month')-years(1), "month") ~ 'CLIENTE NOVO',
-  SEMRECEITA==0 ~ 'SEM RECEITA',
+  
   VAR24>=0 ~ 'CRESCIMENTO',
   VAR24<0 ~ 'QUEDA',
   PAST12==0  ~ 'PERDIDO',
   YTD23==0 & YTD24>0 ~ 'RECUPERADO',
+  SEMRECEITA==0 ~ 'SEM RECEITA',
   TRUE ~ ''
 ))
 

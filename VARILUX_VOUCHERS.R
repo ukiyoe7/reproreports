@@ -159,7 +159,7 @@ ggplot(aes(x = as.factor(ANO), y = VALOR, fill = VOUCHER)) +
   geom_text(aes(label = scales::number_format(big.mark = ".", decimal.mark = ",")(VALOR)),
             position = position_dodge(width = 0.9), vjust = -0.5, hjust = 0.5, size = 8, color = "white") +
   labs(x = "Ano", title = "VARILUX YTD 23 X 24 | VENDAS E VOUCHERS  ") +
-  ylim(0, 13000000) +
+  ylim(0, 20000000) +
   theme(axis.text.y = element_blank(),
         plot.background = element_rect(fill = "#324254"),
         panel.background = element_rect(fill = "#324254"),
