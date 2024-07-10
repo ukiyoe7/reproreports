@@ -1,19 +1,21 @@
-## RANKING CLIENTS
-## LAST UPDATE 12.04.2024
-## SANDRO JAKOSKA
+## RANKING CLIENTES ATENDIMENTO
+## CRIADO POR SANDRO JAKOSKA
 
-## LOAD =======================================================================
+## LOAD LIBS =======================================================================
 
 library(tidyverse)
 library(lubridate)
 library(reshape2)
 library(DBI)
 library(openxlsx)
+library(readxl)
+
+## sql connect
 
 con2 <- dbConnect(odbc::odbc(), "repro",encoding="Latin1")
 
 
-## CLIENTS ==========================================================================
+## SQLS ==========================================================================
 
 clientes <- dbGetQuery(con2,"
 SELECT DISTINCT C.CLICODIGO,
@@ -45,9 +47,6 @@ atendimento <- dbGetQuery(con2,"SELECT CLICODIGO,FUNNOME ATENDIMENTO FROM CLIEN 
                     LEFT JOIN FUNCIO F ON C.FUNCODIGO2=F.FUNCODIGO
                      WHERE CLICLIENTE='S'")
 
-
-##  SALES ==========================================================================
-
 sales2024 <- dbGetQuery(con2,"
 WITH CLI AS (SELECT DISTINCT CLIEN.CLICODIGO,CLINOMEFANT
   FROM CLIEN
@@ -77,12 +76,14 @@ END LENTES,
     INNER JOIN AUX ON PD.PROCODIGO= AUX.PROCODIGO
      GROUP BY 1,2,3") 
 
+## data stored 
+
 sales2023 <- get(load("C:\\Users\\REPRO SANDRO\\Documents\\R\\REPORTS\\BASES\\sales2023.RData"))
+
+## union all sales data
 
 sales <- union_all(sales2023,sales2024)
 
-
-##  DISCOUNTS ==========================================================================
 
 desct <- dbGetQuery(con2,"
 SELECT CLICODIGO,
@@ -156,7 +157,7 @@ CODGRUPO,
   dcast(.,CODGRUPO ~ LINHA,mean_no_zero) %>% replace(is.na(.),0) %>% apply(.,2,function(x) round(x,0)) %>% as.data.frame()
 
 
-##  RANKING CLIENTS ==========================================================================
+##  SUMMARIZE ==========================================================================
 
 nsales <- sales %>% group_by(CLICODIGO) %>% 
   summarize(
@@ -219,9 +220,13 @@ corder <- c("ATENDIMENTO","CLICODIGO","NOMEFANTASIA","CODGRUPO","GRUPO","SETOR",
 data <- data %>% .[,corder] %>% mutate_all(~replace(., is.nan(.), NA)) 
 
 
-NOMES_ATENDIMENTOS <- data.frame(
-  ATENDIMENTO = c("CLODOALDO ECA DE ALMEIDA NETO", "OVANIR JESUS DE LIMA JUNIOR")
-)
+## get names to run loop
+
+NOMES_ATENDIMENTOS <- read_excel("C:\\Users\\REPRO SANDRO\\OneDrive - Luxottica Group S.p.A (1)\\ATENDIMENTO\\NOMES_ATENDIMENTO.xlsx") %>% 
+   data.frame(.) %>% rename(ATENDIMENTO=NOMES)
+
+
+## EXCEL LOOP =====================================================
 
 # Function to create individual workbooks
 create_client_workbook <- function(client_name) {
@@ -278,7 +283,7 @@ create_client_workbook <- function(client_name) {
   writeDataTable(wb, "RANKING", client_data, startCol = 1, startRow = 1, colNames = TRUE, rowNames = FALSE, tableStyle = "TableStyleMedium2", withFilter = TRUE)
   
   # Save workbook
-  saveWorkbook(wb, file = paste0("RANKING_CLIENTES_ATENDIMENTO_", gsub(" .*", "", client_name), ".xlsx"), overwrite = TRUE)
+  saveWorkbook(wb, file = paste0("C:\\Users\\REPRO SANDRO\\OneDrive - Luxottica Group S.p.A (1)\\ATENDIMENTO\\RANKING_CLIENTES_ATENDIMENTO_", gsub(" .*", "", client_name), ".xlsx"), overwrite = TRUE)
 }
 
 # Iterate over each client and create workbooks
