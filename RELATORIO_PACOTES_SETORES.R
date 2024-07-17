@@ -158,7 +158,7 @@ pacotes_last_year %>% mutate(ANO=format(floor_date(Sys.Date()-years(1), "year"),
 View(pacotes_year)
 
 
-## create excel ==================================================
+## create excel setores ==================================================
 
 
 unique_setores <- unique(base_pacotes$SETOR_COMERCIAL)
@@ -187,13 +187,37 @@ create_setores_workbook <- function(setor) {
   
   setColWidths(pacotes, sheet = "RESUMO", cols = c(4:16), widths = 9)
   
-  addStyle(pacotes, sheet = "RESUMO", style = estiloNumerico, cols = c(4:16), rows = 1:10, gridExpand = TRUE)
+## styles
+  numstyle <- createStyle(numFmt = "#,##0")
   
-
-
+  percstyle <- createStyle(numFmt = "0.00%")
+  
+  crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
+  
+  queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+  
+  
+  
+  addStyle(pacotes, sheet = "RESUMO", style = percstyle, cols = c(4:16), rows =11, gridExpand = TRUE)
+  
+  
   writeDataTable(pacotes, "RESUMO", setores_data2, startCol = 2, startRow = 5, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
     
   writeDataTable(pacotes, "RESUMO", setores_data3, startCol = 2, startRow = 10, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+  
+  
+  # Apply styles
+  addStyle(pacotes, sheet = "RESUMO", style = numstyle, cols = 4:16, rows = 1:10, gridExpand = TRUE)
+  addStyle(pacotes, sheet = "RESUMO", style = percstyle, cols = 4:16, rows = 11, gridExpand = TRUE)
+  
+  
+  crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
+  
+  queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+  
+  conditionalFormatting(pacotes, sheet = "RESUMO", cols = 4:16, rows = 11, rule = '> 0', style = crescimento)
+  conditionalFormatting(pacotes, sheet = "RESUMO", cols = 4:16, rows = 11, rule = '< 0', style = queda)
+  
   
   
   # Set column widths
@@ -233,11 +257,12 @@ create_setores_workbook <- function(setor) {
   
   writeDataTable(pacotes, "BASE", setores_data, startCol = 1, startRow = 1, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = TRUE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
   
-  
+  addStyle(pacotes, sheet = "BASE", style = numstyle, cols = c(9,19), rows = 1:nrow(setores_data)+1, gridExpand = TRUE)
+
   
   setor_prefix <- sub("^(\\D*)(\\d+).*", "\\1_\\2", setor)
   
-  file_path <- paste0("C:\\Users\\REPRO SANDRO\\OneDrive - Luxottica Group S.p.A (1)\\PACOTES\\BASE_PACOTES_", setor_prefix, ".xlsx")
+  file_path <- paste0("C:\\Users\\REPRO SANDRO\\OneDrive - Luxottica Group S.p.A (1)\\PACOTES\\PACOTES_", setor_prefix, ".xlsx")
   
   saveWorkbook(pacotes, file = file_path, overwrite = TRUE)
   
@@ -246,5 +271,91 @@ create_setores_workbook <- function(setor) {
 lapply(unique_setores, create_setores_workbook)
 
 
+## create excel geral ==================================================
+
+pacotes_geral <- createWorkbook()
+
+addWorksheet(pacotes_geral, "RESUMO")
+addWorksheet(pacotes_geral, "BASE")
+
+# Set column widths
+setColWidths(pacotes_geral, sheet = "RESUMO", cols = 1, widths = 1)
+
+setColWidths(pacotes_geral, sheet = "RESUMO", cols = 2, widths =20)
+
+setColWidths(pacotes_geral, sheet = "RESUMO", cols = 3, widths = 10)
+
+setColWidths(pacotes_geral, sheet = "RESUMO", cols = c(4:16), widths = 9)
+
+## styles
+numstyle <- createStyle(numFmt = "#,##0")
+
+percstyle <- createStyle(numFmt = "0.00%")
+
+crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
+
+queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
 
 
+# Apply styles
+addStyle(pacotes_geral, sheet = "RESUMO", style = numstyle, cols = 4:16, rows = 1:24, gridExpand = TRUE)
+addStyle(pacotes_geral, sheet = "RESUMO", style = percstyle, cols = 4:16, rows = 28:36, gridExpand = TRUE)
+
+
+crescimento <- createStyle(fontColour = "#02862a", bgFill = "#ccf2d8")
+
+
+queda <- createStyle(fontColour = "#7b1e1e", bgFill = "#e69999")
+
+
+conditionalFormatting(pacotes_geral, sheet = "RESUMO", cols = 4:16, rows = 28:36, rule = '> 0', style = crescimento)
+conditionalFormatting(pacotes_geral, sheet = "RESUMO", cols = 4:16, rows = 28:36, rule = '< 0', style = queda)
+
+
+writeDataTable(pacotes_geral, "RESUMO", pacotes_current_year_with_totals %>% mutate(ANO=as.numeric(format(floor_date(Sys.Date(), "year"),"%Y"))) %>%  select(1, ANO, everything()), startCol = 2, startRow = 3, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+writeDataTable(pacotes_geral, "RESUMO", pacotes_last_year_with_totals %>% mutate(ANO=as.numeric(format(floor_date(Sys.Date()-years(1), "year"),"%Y"))) %>%  select(1, ANO, everything()), startCol = 2, startRow = 15, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+writeDataTable(pacotes_geral, "RESUMO", varYY, startCol = 2, startRow = 27, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = FALSE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+
+
+# Set column widths
+setColWidths(pacotes_geral, sheet = "BASE", cols = 1, widths = 12)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 2, widths =40)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 3, widths = 40)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 4, widths = 15)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 5, widths = 15)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 6, widths = 15)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 7, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 8, widths = 40)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 9, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 10, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 11, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 12, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 13, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 14, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 15, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 16, widths = 20)
+
+setColWidths(pacotes_geral, sheet = "BASE", cols = 17, widths = 20)  
+
+writeDataTable(pacotes_geral, "BASE", base_pacotes, startCol = 1, startRow = 1, tableStyle = "TableStyleMedium2",tableName = NULL, headerStyle = NULL, withFilter = TRUE, keepNA = FALSE, na.string = NULL, sep = ", ", stack = FALSE, firstColumn = FALSE, lastColumn = FALSE, bandedRows = TRUE, bandedCols = FALSE)
+
+addStyle(pacotes_geral, sheet = "BASE", style = numstyle, cols = c(9,19), rows = 1:nrow(base_pacotes)+1, gridExpand = TRUE)
+
+file_path2 <- paste0("C:\\Users\\REPRO SANDRO\\OneDrive - Luxottica Group S.p.A (1)\\PACOTES\\PACOTES_GERAL.xlsx")
+
+saveWorkbook(pacotes_geral, file = file_path2, overwrite = TRUE)
